@@ -6,25 +6,34 @@ Parameters:
     Type: AWS::EC2::Instance::Id
     Description: EC2 to monitor
 
+  pInstanceStackName:
+    Type: String
+    Description: CFT Stack that will use this Template
+    
+    # Value:
+    #   Fn::ImportValue:
+    #     !Sub "${AWS::StackName}-InstanceID"
+
 Resources:
   
-  NestedInstance:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: 
-      TimeoutInMinutes: 60
+  # NestedInstance:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: 
+  #     TimeoutInMinutes: 60
 
-  Outputs:
-    StackRef:
-      Value: !Ref CF-NestedInstance
-    NestedOutputs:
-      Value: !GetAtt CF-NestedInstance.Outputs.InstanceID  
+  # Outputs:
+  #   oNestedInstance:
+  #     Value: !Ref CF-NestedInstance
+  #   oNestedOutputs:
+  #     Value: !GetAtt CF-NestedInstance.Outputs.InstanceID  
        
         # InstanceID:
         #   !ImportValue ${InstanceID}-NestedInstanceID
         
   rCPUAlarm:
     Type: AWS::CloudWatch::Alarm
+    DeletionPolicy: Delete
     Properties:
       MetricName: CPUUtilization
       Namespace: AWS/EC2
