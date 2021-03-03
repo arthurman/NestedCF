@@ -4,26 +4,12 @@ Description: CF-NestedInstance
 
 Parameters:
 
-  pNestedInstanceID:
-    Type: AWS::EC2::Instance::Id
-    Description: EC2 Instance ID for newly created Instance
-
   pInstanceImage:
     Type: String
     Description: Subnet ID for where the instance will be launched
     Default: ami-a4c7edb2
 
 Resources:
-
-  rCloudWatchAlarmStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: https://cf-nestedtemplates.s3.amazonaws.com/NestedCWAlarms.yml
-      Parameters:
-        pEc2InstanceId: !Ref rNestedInstance
-        pInstanceStackName: !Ref AWS::StackName
-      TimeoutInMinutes: 60
-
 
   rNestedInstance:
     Type: AWS::EC2::Instance
@@ -33,10 +19,8 @@ Resources:
       SecurityGroups:
         - !Ref rSSHSecurityGroup
         - !Ref rServerSecurityGroup
-      
-      #Need to find the Pseudo parameter or Variable for Cloudwatch Alarms
-        - !GetAtt rCloudWatchAlarmStack.Outputs.InstanceID  
 
+      
   # our EC2 security group
   rSSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -62,18 +46,27 @@ Resources:
         FromPort: 22
         ToPort: 22
         CidrIp: 172.31.0.0/20
-    
 
-
+  rCloudWatchAlarmStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://cf-nestedtemplates.s3.amazonaws.com/NestedCWAlarms.yml
+      Parameters:
+        pEc2InstanceId: !Ref rNestedInstance
+        pInstanceStackName: !Ref AWS::StackName
+      TimeoutInMinutes: 60
+      
 
 Outputs:
   oNestedInstanceID:
     Description: This will return the Instance ID, to be used in the ec2-alarms-cw cft.
-    Value: !Ref pNestedInstance
-    Export:
-        Name: !Sub "${AWS::StackName}-InstanceID"
+    Value: !Ref rNestedInstance
+  
+  oStackName:
+    Description: Stack Name for Instance
+    Value: !Sub '${AWS::StackName}'
     
   oRegion:
     Description: Region EC2 was Launched in
-    Value: !Ref "AWS::Region"
+    Value: !Ref AWS::Region
     
