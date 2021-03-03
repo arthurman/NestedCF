@@ -1,7 +1,7 @@
 ---
 ---
 AWSTemplateFormatVersion: "2010-09-09"
-Description: NestTestOne-InstanceID-NVA
+Description: CF-NestedInstance
 
 Parameters:
 
@@ -52,4 +52,6 @@ Outputs:
   oNestedInstanceID:
     Description: This will return the Instance ID, to be used in the ec2-alarms-cw cft.
     Value: !Ref rNestedInstance
+    Export:
+      Name: !Sub "${AWS::StackName}-InstanceID"
     
