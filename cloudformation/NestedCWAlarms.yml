@@ -5,55 +5,13 @@ Parameters:
   pEc2InstanceId:
     Type: AWS::EC2::Instance::Id
     Description: EC2 to monitor
-  pEc2AmiId:
-    Type: AWS::EC2::Image::Id
-    Description: Image ID to monitor.
-  # pCidValue:
-  #   Description: Customer ID found in Salesforce
-  #   Type: String
-  #   MinLength: 1
-  # pCPUAlarmPriority:
-  #   Description: CPU Alarm Priority
-  #   Type: String
-  #   AllowedValues:
-  #     - P1
-  #     - P2
-  #     - P3
-  #     - P4
-  #     - P5
-  #   Default: P1
-  # pStatusCheckPriority:
-  #   Description: Status Check Priority
-  #   Type: String
-  #   AllowedValues:
-  #     - P1
-  #     - P2
-  #     - P3
-  #     - P4
-  #     - P5
-  #   Default: P1
-  # pMemoryUsagePriority:
-  #   Description: Status Check Priority
-  #   Type: String
-  #   AllowedValues:
-  #     - P1
-  #     - P2
-  #     - P3
-  #     - P4
-  #     - P5
-  #   Default: P1
-  pSNSTopicName:
-    Description: Name of SNS Topic
-    Type: String
-    MinLength: 1
-    Default: Opsgenie
 
 Resources:
   
   NestedInstance:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
+      TemplateURL: 
       TimeoutInMinutes: 60
 
   Outputs:
@@ -61,18 +19,13 @@ Resources:
       Value: !Ref CF-NestedInstance
     NestedOutputs:
       Value: !GetAtt CF-NestedInstance.Outputs.InstanceID  
-
-        
-        
+       
         # InstanceID:
         #   !ImportValue ${InstanceID}-NestedInstanceID
-
-
         
   rCPUAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmDescription: !Sub "CID*${pCidValue} - *${pCPUAlarmPriority}* - CPU Alarm."
       MetricName: CPUUtilization
       Namespace: AWS/EC2
       Statistic: Average
@@ -83,48 +36,3 @@ Resources:
       Dimensions:
       - Name: InstanceId
         Value: !Ref pEc2InstanceId
-      AlarmActions:
-        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
-      OKActions:
-        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
-
-  # Reports whether the instance has passed both the instance status check and the system status check in the last minute.
-  rEc2StatusCheck:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmDescription: !Sub "CID*${pCidValue} - *${pStatusCheckPriority}* - EC2 Status Check Fail Alarm."
-      MetricName: StatusCheckFailed
-      Namespace: AWS/EC2
-      Statistic: Maximum
-      Period: 300
-      EvaluationPeriods: 2
-      Threshold: 1
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      Dimensions:
-      - Name: InstanceId
-        Value: !Ref pEc2InstanceId
-      AlarmActions:
-        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
-      OKActions:
-        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
-
-  rMemoryAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmDescription: !Sub "CID*${pCidValue} - *${pMemoryUsagePriority}* - Memory Usage Alarm."
-      MetricName: mem_used_percent
-      Namespace: CWAgent
-      Statistic: Average
-      Period: 300
-      EvaluationPeriods: 2
-      Threshold: 95
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      Dimensions:
-        - Name: InstanceId
-          Value: !Ref pEc2InstanceId
-        - Name: ImageId
-          Value: !Ref pEc2AmiId
-      AlarmActions:
-        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
-      OKActions:
-        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
