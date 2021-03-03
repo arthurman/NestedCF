@@ -1,5 +1,4 @@
 ---
----
 AWSTemplateFormatVersion: "2010-09-09"
 Description: CF-NestedInstance
 
@@ -53,5 +52,9 @@ Outputs:
     Description: This will return the Instance ID, to be used in the ec2-alarms-cw cft.
     Value: !Ref rNestedInstance
     Export:
-      Name: !Sub "${AWS::StackName}-InstanceID"
+        Name: !Sub "${AWS::StackName}-InstanceID"
+    
+  oRegion:
+    Description: Region EC2 was Launched in
+    Value: !Ref "AWS::Region"
     
