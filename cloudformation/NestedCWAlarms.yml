@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: CF-NestedCWAlarms
+Description: CF-NestedCWAlarm
 
 Parameters:
 
@@ -27,3 +27,18 @@ Resources:
       Dimensions:
       - Name: InstanceId
         Value: !Ref pEc2InstanceId
+
+  # Reports whether the instance has passed both the instance status check and the system status check in the last minute.
+  # rEc2StatusCheck:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     MetricName: StatusCheckFailed
+  #     Namespace: AWS/EC2
+  #     Statistic: Maximum
+  #     Period: 300
+  #     EvaluationPeriods: 2
+  #     Threshold: 1
+  #     ComparisonOperator: GreaterThanOrEqualToThreshold
+  #     Dimensions:
+  #     - Name: InstanceId
+  #       Value: !Ref pEc2InstanceId

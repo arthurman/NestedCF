@@ -8,6 +8,11 @@ Parameters:
     Type: String
     Description: Subnet ID for where the instance will be launched
     Default: ami-a4c7edb2
+  
+  pNestedStackURL:
+    Type: String
+    Description: The S3 URL to the nested stack.
+    Default: "https://cf-nestedtemplates.s3.amazonaws.com/NestedCWAlarms.yml"
 
 Resources:
 
@@ -50,7 +55,7 @@ Resources:
   rCloudWatchAlarmStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://cf-nestedtemplates.s3.amazonaws.com/NestedCWAlarms.yml
+      TemplateURL: !Ref pNestedStackURL
       Parameters:
         pEc2InstanceId: !Ref rNestedInstance
         pInstanceStackName: !Ref AWS::StackName
