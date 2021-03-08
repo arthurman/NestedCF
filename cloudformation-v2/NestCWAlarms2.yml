@@ -3,7 +3,7 @@ Description: CF-NestedCWAlarm
 
 Parameters:
 
-  pEc2InstanceId:
+  pInstanceId:
     Type: AWS::EC2::Instance::Id
     Description: EC2 to monitor
 
@@ -31,10 +31,15 @@ Resources:
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
       - Name: InstanceId
-        Value: !Ref pEc2InstanceId
+        Value: !Ref pInstanceId
+      AlarmActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
+      OKActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
 
   rMemoryAlarm:
     Type: AWS::CloudWatch::Alarm
+    DeletionPolicy: Delete
     Properties:
       AlarmDescription: !Sub "CID*${pCidValue} - *${pMemoryUsagePriority}* - Memory Usage Alarm."
       MetricName: mem_used_percent
