@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CF-NestedCWAlarm
+
+Parameters:
+
+  pEc2InstanceId:
+    Type: AWS::EC2::Instance::Id
+    Description: EC2 to monitor
+
+  pInstanceStackName:
+    Type: String
+    Description: CFT Stack that will use this Template
+
+Resources:
+        
+  rCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DeletionPolicy: Delete
+    Properties:
+      MetricName: CPUUtilization
+      Namespace: AWS/EC2
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 90
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+      - Name: InstanceId
+        Value: !Ref pEc2InstanceId
+
+  rMemoryAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: !Sub "CID*${pCidValue} - *${pMemoryUsagePriority}* - Memory Usage Alarm."
+      MetricName: mem_used_percent
+      Namespace: CWAgent
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 95
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref pEc2InstanceId
+      AlarmActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
+      OKActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
+
+  # Reports whether the instance has passed both the instance status check and the system status check in the last minute.
+  # rEc2StatusCheck:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     MetricName: StatusCheckFailed
+  #     Namespace: AWS/EC2
+  #     Statistic: Maximum
+  #     Period: 300
+  #     EvaluationPeriods: 2
+  #     Threshold: 1
+  #     ComparisonOperator: GreaterThanOrEqualToThreshold
+  #     Dimensions:
+  #     - Name: InstanceId
+  #       Value: !Ref pEc2InstanceId
