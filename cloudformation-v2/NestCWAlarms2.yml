@@ -10,6 +10,11 @@ Parameters:
   pInstanceStackName:
     Type: String
     Description: CFT Stack that will use this Template
+  
+  pSNSTopicName:
+    Type: String
+    Description: SNS topic name for the alarms
+    Default: NestedCWAlarmsTest
 
 Resources:
         
