@@ -1,0 +1,98 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CF-NestedInstance
+
+Parameters:
+
+  pInstanceImage:
+    Type: String
+    Description: Subnet ID for where the instance will be launched
+    Default: ami-a4c7edb2
+  
+  pNestedStackURL:
+    Type: String
+    Description: The S3 URL to the nested stack.
+    Default: "https://cf-nestedtemplates.s3.amazonaws.com/NestedCWAlarms2.yml"
+
+Resources:
+
+  rEC2-AmazonLinux:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref pInstanceImage
+      InstanceType: t2.micro
+      SecurityGroups:
+        - !Ref rSSHSecurityGroup
+        - !Ref rServerSecurityGroup
+
+      
+  # our EC2 security group
+  rSSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+
+  # our second EC2 security group
+  rServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: allow connections from specified CIDR ranges
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 172.31.0.0/20
+
+  rCloudWatchAlarmStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref pNestedStackURL
+      Parameters:
+        pEc2InstanceId: !Ref rEC2-AmazonLinux
+        pInstanceStackName: !Ref AWS::StackName
+      TimeoutInMinutes: 60
+      
+  rEc2InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+      - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
+      - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+​
+  rEc2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: !Ref rEc2InstanceRole
+      Roles:
+      - !Ref rEc2InstanceRole
+
+Outputs:
+  oNestedInstanceID:
+    Description: This will return the Instance ID, to be used in the ec2-alarms-cw cft.
+    Value: !Ref rEC2-AmazonLinux
+  
+  oStackName:
+    Description: Stack Name for Instance
+    Value: !Sub '${AWS::StackName}'
+    
+  oRegion:
+    Description: Region EC2 was Launched in
+    Value: !Ref AWS::Region
+    
