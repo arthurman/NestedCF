@@ -41,7 +41,6 @@ Resources:
     Type: AWS::CloudWatch::Alarm
     DeletionPolicy: Delete
     Properties:
-      AlarmDescription: !Sub "CID*${pCidValue} - *${pMemoryUsagePriority}* - Memory Usage Alarm."
       MetricName: mem_used_percent
       Namespace: CWAgent
       Statistic: Average
@@ -51,7 +50,7 @@ Resources:
       ComparisonOperator: GreaterThanOrEqualToThreshold
       Dimensions:
         - Name: InstanceId
-          Value: !Ref pEc2InstanceId
+          Value: !Ref pInstanceId
       AlarmActions:
         - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pSNSTopicName}"
       OKActions:
