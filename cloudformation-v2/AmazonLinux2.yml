@@ -40,8 +40,6 @@ Resources:
       SecurityGroups:
         - !Ref rSSHSecurityGroup
         - !Ref rServerSecurityGroup
-      Roles:
-        - !Ref rSSMInstanceProfile
 
   rSSMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
