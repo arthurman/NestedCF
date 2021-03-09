@@ -7,7 +7,7 @@ Parameters:
   pInstanceImage:
     Type: String
     Description: Subnet ID for where the instance will be launched
-    Default: ami-a4c7edb2
+    Default: ami-0915bcb5fa77e4892
   
   pNestedStackURL:
     Type: String
@@ -45,7 +45,7 @@ Resources:
   rSSMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: !Ref rSSMInstanceRole
+      InstanceProfileName: !Sub "AmazonLinux-${AWS::StackName}"
       Roles:
       - !Ref rSSMInstanceRole
       
