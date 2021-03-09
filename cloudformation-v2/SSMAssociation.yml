@@ -1,0 +1,18 @@
+---
+
+Resources:
+  CWAgentAssociation:
+    Type: AWS::SSM::Association
+    Properties:
+      Name: AWS-RunShellScript
+      Targets:
+        - Key: tag:cwagent
+          Values:
+            - 'yes'
+      Parameters:
+        commands:
+        - |
+            mkdir -p /usr/share/collectd/
+            touch /usr/share/collectd/types.db
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:AmazonCWAgent-linux
+      WaitForSuccessTimeoutSeconds: 300
