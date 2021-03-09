@@ -27,7 +27,7 @@ Resources:
       Statistic: Average
       Period: 300
       EvaluationPeriods: 2
-      Threshold: 90
+      Threshold: 25
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
       - Name: InstanceId
@@ -46,7 +46,7 @@ Resources:
       Statistic: Average
       Period: 300
       EvaluationPeriods: 2
-      Threshold: 95
+      Threshold: 20
       ComparisonOperator: GreaterThanOrEqualToThreshold
       Dimensions:
         - Name: InstanceId
