@@ -44,7 +44,7 @@ Resources:
   rSSMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      InstanceProfileName: SSM-InstanceProfile
+      InstanceProfileName: !Ref rSSMInstanceRole
       Roles:
       - !Ref rSSMInstanceRole
       
