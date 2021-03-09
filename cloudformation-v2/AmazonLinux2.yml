@@ -37,6 +37,7 @@ Resources:
     Properties:
       ImageId: !Ref pInstanceImage
       InstanceType: t2.micro
+      IamInstanceProfile: !Ref rSSMInstanceProfile
       SecurityGroups:
         - !Ref rSSHSecurityGroup
         - !Ref rServerSecurityGroup
