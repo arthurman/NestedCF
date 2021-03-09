@@ -70,3 +70,17 @@ Resources:
   #     Dimensions:
   #     - Name: InstanceId
   #       Value: !Ref pEc2InstanceId
+
+Outputs:
+  oMemoryAlarm:
+    Description: Memory Alarm Output
+    Value: !Ref rMemoryAlarm
+  
+  oCPUAlarm:
+    Description: CPU Alarm Output
+    Value: !Sub rCPUAlarm
+    
+  oRegion:
+    Description: Region EC2 was Launched in
+    Value: !Ref AWS::Region
+    
